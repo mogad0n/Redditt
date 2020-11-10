@@ -52,5 +52,25 @@ Redditt = conf.registerPlugin('Redditt')
 # conf.registerGlobalValue(Redditt, 'someConfigVariableName',
 #     registry.Boolean(False, _("""Help for someConfigVariableName.""")))
 
+conf.registerNetworkValue(Redditt, 'client_id',
+    registry.string("", _("""Guide to obtaining credentials can be found at
+        https://praw.readthedocs.io/en/latest/getting_started/authentication.html""")))
+
+conf.registerNetworkValue(Redditt, 'client_secret',
+    registry.string("", _("""Guide to obtaining credentials can be found at
+        https://praw.readthedocs.io/en/latest/getting_started/authentication.html""")))
+
+conf.registerNetworkValue(Redditt, 'username',
+    registry.string("", _("""Guide to obtaining credentials can be found at
+        https://praw.readthedocs.io/en/latest/getting_started/authentication.html""")))
+
+conf.registerNetworkValue(Redditt, 'password',
+    registry.string("", _("""Guide to obtaining credentials can be found at
+        https://praw.readthedocs.io/en/latest/getting_started/authentication.html""")))
+
+conf.registerNetworkValue(Redditt, 'user_agent',
+    registry.string("", _("""Guide to obtaining credentials can be found at
+        https://praw.readthedocs.io/en/latest/getting_started/authentication.html""")))
+
 
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:

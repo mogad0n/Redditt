@@ -56,8 +56,8 @@ class Redditt(callbacks.Plugin):
     """Interact with Reddit using the PRAW library"""
     threaded = True
 
-   def getposts(self, irc, msg, args, opts, sub):
-        """getposts [--num <i>] [--sort <hot|new|controversial|gilded|top|rising>] [<subreddit>]
+    def getposts(self, irc, msg, args, opts, sub):
+        """ [--num <i>] [--sort <hot|new|controversial|gilded|top|rising>] [<subreddit>]
 
         Get submissions based on flags provided.
         """
@@ -72,12 +72,24 @@ class Redditt(callbacks.Plugin):
         else:
             num = 10
         if 'sort' in opts:
-            sort_type = opts['sort']
+            if opts['sort'] == 'hot':
+                submissions == subreddit.hot(limit=num)
+            elif opts['sort'] == 'controversial':
+                submissions == subreddit.controversial(limit=num)
+            elif opts['sort'] == 'top':
+                submissions == subreddit.top(limit=num)
+            elif opts['sort'] == 'gilded':
+                submissions == subreddit.gilded(limit=num)
+            elif opts['sort'] == 'rising':
+                submissions == subreddit.rising(limit=num)
+            elif opts['sort'] == 'new':
+                submissions == subreddit.new(limit=num)
         else:
-            sort_type = 'new'
-        for submission in subreddit.sort_type(limit=num):
-            irc.reply(f"""{subreddit.name}> id: ::> {submission.id} {submission.created_utc} {submission.title} by u/{submission.author.name} 
-                score: {submission.score} comments: {submission.num_comments} link: {submission.url} """)
+            submissions == subreddit.new(limit=num)
+
+        for submission in submissions:
+            irc.reply(f"\x02 r/{sub or 'Tripsit'}\x0F ::> id: {submission.id} \x1F {submission.title} \x0F by u/{submission.author.name}" 
+                f"\x0303 score: {submission.score} \x0F :: comments: {submission.num_comments} :: link: {submission.url} ")
 
     getposts = wrap(
             getposts,
@@ -90,7 +102,59 @@ class Redditt(callbacks.Plugin):
                     ),
                     optional("text")
                 ]
-            )
+                )
+
+    def modtools(self, irc, msg, args, opts, id):
+        """--target <posts|comments> --do <remove|approve|lock|unlock> <id>
+
+        Provides a set of tools for moderating subreddits.
+        """
+        opts = dict(opts)
+        if 'do' not in opts or 'target' not in opts:
+            irc.error("Please specify a target and an action using the appropriate format.")
+            return
+        if opts['do'] == "lock":
+            if opts['target'] == 'posts':
+                submission = reddit.submission(id=id)
+                submission.mod.lock()
+            elif opts['target'] == 'comments':
+                comments = reddit.comments(id)
+                comments.mod.lock()
+        elif opts['do'] == "unlock":
+            if opts['target'] == 'posts':
+                submission = reddit.submission(id=id)
+                submission.mod.unlock()
+            elif opts['target'] == 'comments':
+                comments = reddit.comments(id)
+                comments.mod.unlock()
+        if opts['do'] == "remove":
+            if opts['target'] == 'posts':
+                submission = reddit.submission(id=id)
+                submission.mod.remove()
+            elif opts['target'] == 'comments':
+                comments = reddit.comments(id)
+                comments.mod.remove()
+        elif opts['do'] == "approve":
+            if opts['target'] == 'posts':
+                submission = reddit.submission(id=id)
+                submission.mod.approve()
+            elif opts['target'] == 'comments':
+                comments = reddit.comments(id)
+                comments.mod.approve()
+        irc.replySuccess()
+
+    modtools = wrap(
+            modtools,
+                [
+                getopts(
+                    {
+                        "target": ("literal", ("posts", "comments"))
+                        "sort": ("literal", ("lock", "unlock", "remove", "approve"))
+                    }
+                    ),
+                    "text"
+                ]
+                )
     
 Class = Redditt
 
