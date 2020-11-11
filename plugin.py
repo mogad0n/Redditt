@@ -104,7 +104,7 @@ class Redditt(callbacks.Plugin):
                 ]
                 )
 
-    def modtools(self, irc, msg, args, opts, id):
+    def modtools(self, irc, msg, args, opts, identifier):
         """--target <posts|comments> --do <remove|approve|lock|unlock> <id>
 
         Provides a set of tools for moderating subreddits.
@@ -115,31 +115,31 @@ class Redditt(callbacks.Plugin):
             return
         if opts['do'] == "lock":
             if opts['target'] == 'posts':
-                submission = reddit.submission(id=id)
-                submission.mod.lock()
+                submissions = reddit.submission(id=identifier)
+                submissions.mod.lock()
             elif opts['target'] == 'comments':
-                comments = reddit.comments(id)
+                comments = reddit.comment(identifier)
                 comments.mod.lock()
         elif opts['do'] == "unlock":
             if opts['target'] == 'posts':
-                submission = reddit.submission(id=id)
-                submission.mod.unlock()
+                submissions = reddit.submission(id=identifier)
+                submissions.mod.unlock()
             elif opts['target'] == 'comments':
-                comments = reddit.comments(id)
+                comments = reddit.comment(identifier)
                 comments.mod.unlock()
         if opts['do'] == "remove":
             if opts['target'] == 'posts':
-                submission = reddit.submission(id=id)
-                submission.mod.remove()
+                submissions = reddit.submission(id=identifier)
+                submissions.mod.remove()
             elif opts['target'] == 'comments':
-                comments = reddit.comments(id)
+                comments = reddit.comment(identifier)
                 comments.mod.remove()
         elif opts['do'] == "approve":
             if opts['target'] == 'posts':
-                submission = reddit.submission(id=id)
-                submission.mod.approve()
+                submissions = reddit.submission(id=identifier)
+                submissions.mod.approve()
             elif opts['target'] == 'comments':
-                comments = reddit.comments(id)
+                comments = reddit.comment(identifier)
                 comments.mod.approve()
         irc.replySuccess()
 
@@ -149,10 +149,10 @@ class Redditt(callbacks.Plugin):
                 getopts(
                     {
                         "target": ("literal", ("posts", "comments"))
-                        "sort": ("literal", ("lock", "unlock", "remove", "approve"))
+                        "do": ("literal", ("lock", "unlock", "remove", "approve"))
                     }
                     ),
-                    "text"
+                    "something"
                 ]
                 )
     
